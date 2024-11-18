@@ -23,23 +23,57 @@ Ball.prototype.reset = function() {
   this.x = game.width / 2 - this.width / 2
   this.y = game.height / 2 - this.height / 2
 
-  // A simple way to start in a random direction
-  // var max = 5, min = -5
-  // this.yVelocity = Math.floor(Math.random() * (max - min + 1) + min)
-  // this.xVelocity = 5
-
-  // A better way to launch the ball at a random angle
   var minAngle = -30,
       maxAngle = 30,
       angle = Math.floor(Math.random() * (maxAngle - minAngle + 1)) + minAngle
-  // Convert angle to x,y coordinates
+
   var radian = Math.PI / 180,
       speed = 7
   this.xVelocity = speed * Math.cos(angle * radian)
   this.yVelocity = speed * Math.sin(angle * radian)
 
-  // Alternate between right and left
+  // Alternate right and left
   if (Math.random() > 0.5) this.xVelocity *= -1
+}
+
+function getCookie(name) {
+  // Zoek naar cookie
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop().split(';').shift(); // Return waarde cookie
+  }
+  return null; // Cookie niet gevonden
+}
+
+function increaseScore(points) {
+  const nickname = getCookie("nickname");
+
+  fetch('/increase_point', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      nickname: nickname,
+      points: points
+    })
+  })
+  .then(response => {
+    console.log("Ruwe respons:", response); // Log de respons
+    return response.text(); // Eerst als tekst uitlezen
+  })
+  .then(text => {
+    console.log("Respons als tekst:", text); // Bekijk de respons
+    return JSON.parse(text); // Probeer het daarna te parsen
+  })
+  .then(data => {
+    alert(`Score van ${data.nickname} is nu: ${data.new_score}`);
+  })
+  .catch(error => {
+    alert(`Fout: ${error.message}`);
+    console.error("Details:", error);
+  });
 }
 
 Ball.prototype.update = function() {
@@ -54,8 +88,8 @@ Ball.prototype.update = function() {
 
   // Hits a paddle.
   if (hitter) {
-    this.xVelocity *= -1.1 // Rebound and increase speed
-    this.yVelocity *= 1.1
+    this.xVelocity *= -1
+    this.yVelocity *= 1
 
     // Transfer some of the paddle vertical velocity to the ball
     this.yVelocity += hitter.yVelocity / 4
@@ -78,6 +112,7 @@ Ball.prototype.update = function() {
   // Off screen on right. Player wins.
   if (this.x > game.width) {
     game.player.score += 1
+    increaseScore(1)
     this.reset()
   }
 }

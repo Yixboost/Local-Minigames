@@ -26,7 +26,7 @@ function Player() {
   
   this.x = 20
 
-  this.speed = 15
+  this.speed = 10
 }
 
 Player.prototype = Object.create(Paddle.prototype)
