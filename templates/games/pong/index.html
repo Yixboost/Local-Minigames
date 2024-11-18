@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/games/pong/">
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000; /* optioneel: achtergrondkleur */
+      background-image: url(http://yixboost.nl.eu.org/yixboost/login/images/bg2.jpg);
+    }
+    canvas {
+      display: block;
+      border: 5px solid white;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <canvas tabindex="1" width="640" height="480"></canvas>
+
+  <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+  <script src="game.js"></script>
+  <script src="entity.js"></script>
+  <script src="ball.js"></script>
+  <script src="paddles.js"></script>
+  <script src="pong.js"></script>
+</body>
+</html>

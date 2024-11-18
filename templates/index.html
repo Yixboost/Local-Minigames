@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Minigames</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark text-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top transparent-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Local Minigames</a>
+            <div class="d-flex">
+                {% if nickname %}
+                <button class="btn p-0" style="border: none; background: none; margin-right: 10px;">
+                    <div class="image-button">
+                        <img src="/static/images/leave-icon.png" alt="User" width="110px" height="40">
+                        <div class="overlay-text"><i class="fa-regular fa-user"></i> {{ nickname|capitalize }}</div>
+                    </div>
+                </button>                
+                <!-- Leave button with overlay text -->
+                <form action="/leave" method="POST" class="d-flex me-2">
+                    <button type="submit" class="btn p-0" style="border: none; background: none;">
+                        <div class="image-button">
+                            <img src="/static/images/leave-icon.png" alt="Leave" width="auto" height="40">
+                            <div class="overlay-text"><i class="fa-solid fa-power-off"></i> Leave</div>
+                        </div>
+                    </button>
+                </form>
+
+                <!-- Mute button with Font Awesome icon -->
+                <button id="muteButton" class="btn p-0" style="border: none; background: none; position: relative;">
+                    <img src="/static/images/mute-icon.png" alt="Mute" width="40" height="40">
+                    <i class="fa fa-volume-up"></i> <!-- Default icon -->
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container d-flex flex-column align-items-center justify-content-center mt-5">
+
+        {% if nickname %}
+        <ul class="list-unstyled d-flex flex-wrap justify-content-center gap-3" style="margin-top: -30px;">
+            {% for nickname in nicknames %}
+            <li class="bg-secondary p-3 rounded-3 text-center" style="min-width: 150px;">{{ nickname|capitalize }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="input-container p-4 bg-secondary rounded-3 shadow-lg" style="max-width: 400px; width: 100%;">
+            <h1 class="text-center mb-4">Enter your nickname!</h1>
+            <form action="/submit" method="POST">
+                <div class="mb-3">
+                    <label for="nickname" class="form-label text-uppercase">Nickname:</label>
+                    <input type="text" autocomplete="off" id="nickname" name="nickname" class="form-control" required maxlength="10">
+                </div>
+                <!-- Button replaced with image -->
+                <button type="submit" class="btn p-0" style="border: none; background: none;">
+                    <img src="/static/images/submit-icon.png" alt="Invoeren" width="auto" height="50">
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if nickname %}
+    <!-- Minigames Section -->
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Minigames</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for game in games %}
+            <div class="col">
+                <div class="card bg-secondary text-light h-100">
+                    <a href="/games/{{ game }}" class="d-block">
+                        <img src="/games/{{ game }}/{{ game }}.png" class="card-img-top" alt="{{ game }} image">
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <br>
+
+    <!-- Sticky Transparent Footer -->
+    <footer class="footer bottom-0 start-0 w-100 text-center" style="background: transparent; color: white;">
+        <div class="container">
+            <h3 class="mb-0">Powered by <a href="http://yixboost.nl.eu.org" target="_blank"
+                    class="text-decoration-none text-light">Yixboost</a></h3>
+        </div>
+        <br>
+    </footer>
+    {% endif %}
+
+
+    {% if nickname %}
+    <!-- Background music -->
+    <audio id="background-music" autoplay loop>
+        <source src="{{ url_for('static', filename='music/menu-2.wav') }}" type="audio/wav">
+        Your browser does not support HTML5 audio.
+    </audio>
+    {% endif %}
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .game-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .game-item {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .game-item:hover {
+            transform: scale(1.05);
+        }
+        .game-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .game-item a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Available Games</h1>
+    <div class="game-list">
+        {% for game in games %}
+        <div class="game-item">
+            <img src="/games/{{ game }}/{{ game }}.png" alt="{{ game }} image">
+            <a href="/games/{{ game }}">{{ game.capitalize() }}</a>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
