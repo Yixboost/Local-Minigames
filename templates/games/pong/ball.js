@@ -36,6 +36,29 @@ Ball.prototype.reset = function() {
   if (Math.random() > 0.5) this.xVelocity *= -1
 }
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function add_points(points) {
+  const nickname = getCookie("nickname");
+
+  $.ajax({
+      url: '/give_points',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ nickname, points }),
+      success: function () {
+          console.debug("updated points for ", nickname," by: ", points," points");
+      },
+      error: function (xhr) {
+          alert(`Fout: ${xhr.responseJSON.error}`);
+      }
+  });
+}
+
 Ball.prototype.update = function() {
   Entity.prototype.update.apply(this, arguments)
 
@@ -66,12 +89,14 @@ Ball.prototype.update = function() {
   // Off screen on left. Bot wins.
   if (this.x < -this.width) {
     game.bot.score += 1
+
     this.reset()
   }
 
   // Off screen on right. Player wins.
   if (this.x > game.width) {
     game.player.score += 1
+    add_points(1);
     this.reset()
   }
 }
