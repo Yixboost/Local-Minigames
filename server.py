@@ -148,20 +148,36 @@ def get_online_users():
     # Haal de lijst van actieve gebruikers (nicknames)
     return jsonify(nicknames)
 
-@app.route('/increase_point', methods=['POST'])
-def increase_point():
+@app.route('/points', methods=['GET'])
+def points_page():
+    return render_template('points.html')
+
+@app.route('/get_points_data', methods=['GET'])
+def get_points_data():
+    return jsonify(scores)
+
+@app.route('/get_points', methods=['POST'])
+def get_points():
     try:
         data = request.get_json()
         nickname = data.get('nickname')
         points = data.get('points', 0)
 
-        if nickname not in scores:
-            return jsonify({"error": "Nickname not found"}), 404
+        # Controleer of de gebruiker in het systeem (nicknames) staat
+        if nickname not in nicknames:
+            return jsonify({"error": f"Nickname '{nickname}' does not exist in the system."}), 400
 
+        # Als de gebruiker nog niet in de scores staat, initialiseer met 0 punten
+        if nickname not in scores:
+            scores[nickname] = 0
+
+        # Voeg punten toe aan de huidige score
         scores[nickname] += points
+
         return jsonify({"nickname": nickname, "new_score": scores[nickname]}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
