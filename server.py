@@ -17,24 +17,33 @@ def index():
             nicknames.append(nickname)
             scores[nickname] = 0
 
-    # Haal de lijst van beschikbare games op
-    games_path = os.path.join('templates', 'games')
-    games = [d for d in os.listdir(games_path) if os.path.isdir(os.path.join(games_path, d))]
+        # Haal de lijst van beschikbare games op
+        games_path = os.path.join('templates', 'games')
+        games = [d for d in os.listdir(games_path) if os.path.isdir(os.path.join(games_path, d))]
 
-    return render_template('index.html', nicknames=nicknames, nickname=nickname, games=games)
+        return render_template('index.html', nicknames=nicknames, nickname=nickname, games=games)
+    
+    # Toon de nickname-inputpagina als geen nickname is ingesteld
+    return render_template('index.html', nickname=None, nicknames=nicknames)
+
 
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    # Haal de nickname op uit het formulier
+    # Haal de nickname en wachtwoord op uit het formulier
     nickname = request.form.get('nickname')
+    password = request.form.get('password')  # Wachtwoordveld voor host
+
+    # Controleer of 'host' is geselecteerd en het wachtwoord correct is
+    if nickname == 'host':
+        if password != 'pye2tc4g':
+            return redirect(url_for('index'))  # Verwijder sessie bij fout wachtwoord
 
     nics = {
         "je moeder": "een dikke bolle aap",
         "je vader": "een dikke vette podvis",
         "trump": "een grote sukkel met 0 punten"
     }
-    
     if nickname.lower() in nics:
         nickname = nics[nickname.lower()]
         scores[nickname] = 0
@@ -42,7 +51,7 @@ def submit():
     if nickname:
         # Sla de nickname op in een cookie (1 jaar)
         resp = make_response(redirect(url_for('index')))
-        resp.set_cookie('nickname', nickname, max_age=365*24*60*60)  # 1 jaar
+        resp.set_cookie('nickname', nickname, max_age=365 * 24 * 60 * 60)  # 1 jaar
 
         # Voeg nickname toe aan lijst gebruikers
         if nickname not in nicknames:
@@ -51,6 +60,7 @@ def submit():
         return resp
 
     return redirect(url_for('index'))
+
 
 @app.route('/leave', methods=['POST'])
 def leave():
@@ -97,21 +107,6 @@ def list_games():
     games_path = os.path.join('templates', 'games')
     games = [d for d in os.listdir(games_path) if os.path.isdir(os.path.join(games_path, d))]
     return render_template('games.html', games=games)
-
-@app.route('/increase_point', methods=['POST'])
-def increase_point():
-    try:
-        data = request.get_json()
-        nickname = data.get('nickname')
-        points = data.get('points', 0)
-
-        if nickname not in scores:
-            return jsonify({"error": "Nickname not found"}), 404
-
-        scores[nickname] += points
-        return jsonify({"nickname": nickname, "new_score": scores[nickname]}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
