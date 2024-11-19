@@ -37,7 +37,7 @@ def submit():
 
     # Controleer of 'host' is geselecteerd en het wachtwoord correct is
     if nickname == 'host':
-        if password != 'pye2tc4g':
+        if password != 'host':
             return redirect(url_for('index'))  # Verwijder sessie bij fout wachtwoord
 
     # Optionele grappige vervangingen
@@ -156,8 +156,8 @@ def points_page():
 def get_points_data():
     return jsonify(scores)
 
-@app.route('/get_points', methods=['POST'])
-def get_points():
+@app.route('/give_points', methods=['POST'])
+def give_points():
     try:
         data = request.get_json()
         nickname = data.get('nickname')

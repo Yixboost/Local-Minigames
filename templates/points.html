@@ -376,7 +376,7 @@ body::before {
         const points = parseInt($('#points').val());
 
         $.ajax({
-            url: '/get_points',
+            url: '/give_points',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ nickname, points }),
