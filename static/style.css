@@ -10,6 +10,77 @@ body {
     transition: background-image 1s ease-in-out;
 }
 
+h3#game-status {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #ffcc00;
+    margin-bottom: 20px;
+    transition: color 0.5s ease-in-out;
+}
+
+h3#game-status.watching {
+    color: #ff6347; /* Rood wanneer het wachten is */
+}
+
+h3#game-status.playing {
+    color: #32cd32; /* Groene kleur voor "Game is bezig" */
+}
+
+h3#game-status.finished {
+    color: #ff4500; /* Oranje voor "Game is voorbij" */
+}
+
+#countdown {
+    font-size: 2em;
+    font-weight: bold;
+    color: #fff;
+    padding: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: 2px;
+    transition: transform 0.3s ease-in-out;
+}
+
+#countdown img {
+    display: none;
+}
+
+#countdown.upcoming {
+    color: #ff9800; /* Oranje voor wachtende countdown */
+}
+
+#countdown.ongoing {
+    color: #32cd32; /* Groene kleur voor actieve countdown */
+}
+
+#countdown.finished {
+    color: #ff4500; /* Oranje voor 'game over' countdown */
+}
+
+#countdown:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    #countdown {
+        font-size: 1.5em;
+    }
+
+    h3#game-status {
+        font-size: 1.2em;
+    }
+}
+
 .background-overlay {
     position: fixed;
     top: 0;

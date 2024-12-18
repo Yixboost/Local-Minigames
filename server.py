@@ -35,9 +35,13 @@ def submit():
     nickname = request.form.get('nickname')
     password = request.form.get('password')  # Wachtwoordveld voor host
 
+    # Lees het wachtwoord uit het bestand psswd.txt
+    with open('psswd.txt', 'r') as file:
+        correct_password = file.read().strip()  # Verwijder eventuele extra spaties of nieuwe regels
+
     # Controleer of 'host' is geselecteerd en het wachtwoord correct is
     if nickname == 'host':
-        if password != 'host':
+        if password != correct_password:
             return redirect(url_for('index'))  # Verwijder sessie bij fout wachtwoord
 
     # Optionele grappige vervangingen
@@ -61,7 +65,6 @@ def submit():
         return resp
 
     return redirect(url_for('index'))
-
 
 @app.route('/leave', methods=['POST'])
 def leave():
@@ -178,6 +181,61 @@ def give_points():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Bestandsnaam voor het opslaan van tijden
+duration_file = "duration.txt"
 
+if not os.path.exists(duration_file):
+    with open(duration_file, "w") as file:
+        file.write("Start Time, End Time\n")  # Optioneel: Voeg een kopregel toe als je wilt
+
+@app.route('/log_times', methods=['POST'])
+def log_times():
+    try:
+        data = request.get_json()
+        start_time = data.get('start_time')  # Starttijd in bijvoorbeeld ISO 8601-formaat
+        end_time = data.get('end_time')      # Eindtijd in hetzelfde formaat
+
+        # Zorg ervoor dat start- en eindtijden zijn meegegeven
+        if not start_time or not end_time:
+            return jsonify({"error": "Both start_time and end_time must be provided."}), 400
+
+        # Voeg de tijden toe aan het bestand
+        with open(duration_file, "a") as file:
+            file.write(f"Start Time: {start_time}, End Time: {end_time}\n")
+
+        return jsonify({"message": "Tijden opgeslagen!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Controleer of het bestand bestaat, zo niet, maak het aan
+if not os.path.exists(duration_file):
+    with open(duration_file, "w") as file:
+        file.write("Start Time, End Time\n")  # Optioneel: Voeg een kopregel toe als je wilt
+
+@app.route('/get_times', methods=['GET'])
+def get_times():
+    try:
+        # Lees de opgeslagen tijden uit het bestand
+        with open(duration_file, "r") as file:
+            lines = file.readlines()
+
+        # Controleer of er tijden zijn opgeslagen
+        if not lines:
+            return jsonify({"message": "No times found."}), 404
+
+        # Parse de tijden naar een lijst van dictionaries
+        times = []
+        for line in lines:
+            start_time, end_time = line.strip().split(", ")
+            start_time = start_time.replace("Start Time: ", "")
+            end_time = end_time.replace("End Time: ", "")
+            times.append({"start_time": start_time, "end_time": end_time})
+
+        return jsonify({"times": times}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
